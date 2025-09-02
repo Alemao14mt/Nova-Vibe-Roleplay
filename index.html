@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVA VIBE ROLEPLAY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/animejs/lib/anime.iife.min.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+            animation: gradientPulse 15s ease infinite;
+            background-size: 200% 200%;
+        }
+        .category-item {
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .category-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(245, 158, 11, 0.3);
+        }
+        .category-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.1), transparent);
+            transition: 0.5s;
+        }
+        .category-item:hover::before {
+            left: 100%;
+        }
+        .product-card {
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .product-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(245, 158, 11, 0.4);
+        }
+        .product-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.8));
+            opacity: 0;
+            transition: 0.5s;
+        }
+        .product-card:hover::after {
+            opacity: 1;
+        }
+        .social-icon {
+            transition: all 0.3s ease;
+        }
+        .social-icon:hover {
+            transform: scale(1.5) rotate(10deg);
+            color: #f59e0b;
+            text-shadow: 0 0 10px rgba(245, 158, 11, 0.7);
+        }
+        @keyframes gradientPulse {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .hero-text {
+            text-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+        }
+        .btn-glow {
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.8); }
+            100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
+        }
+        /* Estilos do Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #1a1a1a;
+            margin: auto;
+            padding: 2.5rem;
+            border-radius: 0.75rem;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 40px rgba(245, 158, 11, 0.5);
+            transform: scale(0.9);
+            opacity: 0;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            position: relative;
+        }
+        .modal.show .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .close-btn {
+            color: #fff;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .close-btn:hover, .close-btn:focus {
+            color: #f59e0b;
+        }
+    </style>
+</head>
+<body class="gradient-bg text-gray-100 font-sans">
+    <nav class="bg-black bg-opacity-90 fixed w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <span class="text-yellow-400 font-bold text-2xl">NOVA VIBE ROLEPLAY</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#categories" class="px-3 py-2 rounded-md text-sm font-medium text-white hover:text-yellow-400 transition">Categorias</a>
+                        <a href="#products" class="px-3 py-2 rounded-md text-sm font-medium text-white hover:text-yellow-400 transition">Produtos</a>
+                        <a href="#contact" class="px-3 py-2 rounded-md text-sm font-medium text-white hover:text-yellow-400 transition">Contato</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button class="mobile-menu-button p-2 rounded-md text-yellow-400 hover:text-white focus:outline-none">
+                        <i data-feather="menu"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="text-center" data-aos="fade-up">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-6 hero-text" data-aos="zoom-in" data-aos-duration="1000">
+                <span class="text-yellow-400 bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-yellow-600">EXCLUSIVIDADE</span> EM CADA DETALHE
+            </h1>
+            <p class="mt-6 text-xl text-gray-300 max-w-3xl mx-auto">
+                Oferecemos os melhores produtos premium para clientes que exigem excelência. VIPs, corporações e colecionadores encontram aqui o que há de mais exclusivo.
+            </p>
+            <div class="mt-10">
+                <a href="#categories" class="px-8 py-3 border border-transparent text-base font-medium rounded-md text-black bg-yellow-400 hover:bg-yellow-500 md:py-4 md:text-lg md:px-10 transition transform hover:scale-105 btn-glow" data-aos="fade-up" data-aos-delay="300">
+                    EXPLORAR CATEGORIAS
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="categories" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="text-3xl md:text-4xl font-bold text-white">
+                NOSSAS <span class="text-yellow-400">CATEGORIAS</span>
+            </h2>
+            <div class="w-20 h-1 bg-yellow-400 mx-auto mt-4"></div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8" data-aos="fade-up" data-aos-delay="200">
+            <div class="category-item bg-gray-900 rounded-lg overflow-hidden shadow-lg" data-aos="fade-up" data-aos-delay="100">
+                <div class="h-40 overflow-hidden">
+                    <img src="https://cdn.discordapp.com/attachments/1394794327724527650/1412384021324890122/Gemini_Generated_Image_7p769r7p769r7p76.png?ex=68b8189f&is=68b6c71f&hm=141195c6b470c00418b4b103be6d4d08326ae9e7858f55c9be685a66b5fbc17b&"
+                        alt="VIP"
+                        class="w-full h-full object-cover">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-center text-xl font-semibold text-white mb-2">VIP</h3>
+                    <p class="text-gray-400 text-center mb-4">Experiências e produtos exclusivos para clientes de alto padrão.</p>
+                    <button onclick="showProducts('vip')" class="w-full py-2 bg-yellow-400 text-black font-medium rounded hover:bg-yellow-500 transition">
+                        Ver Produtos
+                    </button>
+                </div>
+            </div>
+            
+            <div class="category-item bg-gray-900 rounded-lg overflow-hidden shadow-lg" data-aos="fade-up" data-aos-delay="200">
+                <div class="h-40 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80"
+                        alt="Corporações/Facções"
+                        class="w-full h-full object-cover">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-center text-xl font-semibold text-white mb-2">Corporações / Facções</h3>
+                    <p class="text-gray-400 text-center mb-4">Soluções premium para Corporações e Facções de elite.</p>
+                    <button onclick="showProducts('corporations')" class="w-full py-2 bg-yellow-400 text-black font-medium rounded hover:bg-yellow-500 transition">
+                        Ver Produtos
+                    </button>
+                </div>
+            </div>
+            
+            <div class="category-item bg-gray-900 rounded-lg overflow-hidden shadow-lg" data-aos="fade-up" data-aos-delay="300">
+                <div class="h-40 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=800&q=80" 
+                        alt="Veículos Privados" 
+                        class="w-full h-full object-cover">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-center text-xl font-semibold text-white mb-2">Veículos Privados</h3>
+                    <p class="text-gray-400 text-center mb-4">Exclusiva de veículos para os mais exigentes.</p>
+                    <button onclick="showProducts('vehicles')" class="w-full py-2 bg-yellow-400 text-black font-medium rounded hover:bg-yellow-500 transition">
+                        Ver Produtos
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="products" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="text-3xl md:text-4xl font-bold text-white">
+                NOSSOS <span class="text-yellow-400">PRODUTOS</span>
+            </h2>
+            <div class="w-20 h-1 bg-yellow-400 mx-auto mt-4"></div>
+            <p class="text-gray-400 mt-4 max-w-2xl mx-auto" id="category-description">
+                Selecione uma categoria para visualizar nossos produtos exclusivos
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="products-container" data-aos="fade-up" data-aos-delay="300">
+            <div class="text-center py-10">
+                <i data-feather="package" class="w-16 h-16 text-yellow-400 mx-auto"></i>
+                <p class="text-gray-400 mt-4">Selecione uma categoria para visualizar os produtos</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center" data-aos="fade-up">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-10">
+            SIGA <span class="text-yellow-400">NOSSAS REDES</span>
+        </h2>
+        <div class="flex justify-center space-x-10">
+            <a href="https://instagram.com" target="_blank" class="social-icon text-gray-400 hover:text-yellow-400">
+                <i data-feather="instagram" class="w-12 h-12"></i>
+            </a>
+            <a href="https://discord.gg/7KtCgyugnH" target="_blank" class="social-icon text-gray-400 hover:text-yellow-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.317 4.369a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.211.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.47 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.682 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.037.077.077 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.105 13.158 13.158 0 0 1-1.872-.891.077.077 0 0 1-.008-.128c.125-.094.25-.19.37-.288a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.009c.12.098.245.194.37.289a.077.077 0 0 1-.006.127 12.52 12.52 0 0 1-1.873.891.077.077 0 0 0-.04.106c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.029 19.88 19.88 0 0 0 6.002-3.037.077.077 0 0 0 .031-.056c.5-5.177-.838-9.673-3.54-13.662a.06.06 0 0 0-.032-.028ZM8.02 15.333c-1.182 0-2.156-1.085-2.156-2.419s.955-2.419 2.157-2.419c1.21 0 2.175 1.094 2.156 2.419 0 1.334-.955 2.419-2.157 2.419Zm7.974 0c-1.182 0-2.156-1.085-2.156-2.419s.955-2.419 2.156-2.419c1.21 0 2.175 1.094 2.156 2.419 0 1.334-.946 2.419-2.156 2.419Z"/>
+                </svg>
+            </a>
+        </div>
+        <p class="text-gray-400 mt-6 text-lg">
+            Junte-se à nossa comunidade no Discord e fique por dentro das novidades!
+        </p>
+    </section>
+
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modal-body">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample product data - you would replace this with your actual product data
+        const products = {
+            vip: [
+                { 
+                    id: 1, 
+                    name: "Pacote VIP Alpha", 
+                    description: "Acesso exclusivo a eventos, lounges privativos e serviços personalizados 24/7.", 
+                    price: "R$ 12/mês",
+                    imageUrl: "https://cdn.discordapp.com/attachments/1401788659153502228/1412109804599644220/1.png?ex=68b7c1fd&is=68b6707d&hm=4390b3c06bc1e58d31edc487a0e94a07d2d17f8760bc1ffbd57a7b104fb8b3e4&",
+                    details: [
+                        "💰 Salário diário: R$20.000.",
+                        "🏍️ 1 Moto personalizada",
+                        "🧥 1 Skin exclusiva",
+                    ]
+                },
+                { 
+                    id: 2, 
+                    name: "Pacote Vip Epsylon", 
+                    description: "Equipe dedicada para cuidar de todos os detalhes da sua vida pessoal e profissional.", 
+                    price: "R$ 20/mês",
+                    imageUrl: "https://cdn.discordapp.com/attachments/1401788659153502228/1412110435552854067/2.png?ex=68b7c293&is=68b67113&hm=a6559d09d5718f7214b935b8ef557d02ac4a95894f6aaa805d76c777b732dddd&",
+                    details: [
+                        "💰 Salário diário: R$30.000",
+                        "🚗 2 Veículos exclusivos",
+                        "🧥 2 Skins diferenciadas",
+                        "🛡️ 1 Colete de proteção"
+                    ]
+                },
+                { 
+                    id: 3, 
+                    name: "Pacote Vip Sigma", 
+                    description: "Roteiros personalizados com hospedagem em resorts e hotéis de luxo ao redor do mundo.", 
+                    price: "R$ 35/mês",
+                    imageUrl: "https://cdn.discordapp.com/attachments/1401788659153502228/1412111478785314898/3.png?ex=68b7c38c&is=68b6720c&hm=f63a60d0ca05393387a5cecca07a35d0c51b7704078e6c5f992faac7423d484a&",
+                    details: [
+                        "💰 Salário diário: R$40.000",
+                        "🚗 2 Veículos exclusivos",
+                        "🧥 3 Skins diferenciadas",
+                        "🛡️ 1 Colete de proteção"
+                    ]
+                },
+                { 
+                    id: 4, 
+                    name: "Pacote Vip Omega", 
+                    description: "Roteiros personalizados com hospedagem em resorts e hotéis de luxo ao redor do mundo.", 
+                    price: "R$ 45/mês",
+                    imageUrl: "https://cdn.discordapp.com/attachments/1401788659153502228/1412111876195614751/4.png?ex=68b7c3eb&is=68b6726b&hm=8c3ebffee9ca4f8eb48072590d688484cfbcc90f2828df398f8425dcb53d9fe6&",
+                    details: [
+                        "💰 Salário diário: R$50.000",
+                        "🚗 2 Veículos exclusivos",
+                        "🧥 4 Skins diferenciadas",
+                        "🛡️ 1 Colete de proteção"
+                    ]
+                }
+            ],
+            corporations: [
+                { 
+                    id: 5, 
+                    name: "Corporações", 
+                    description: "Traga Sua Corporação e seus amigos para o nosso servidor.", 
+                    price: "3 amigos ou R$ 30/mês",
+                    imageUrl: "https://cdn.discordapp.com/attachments/1401788524562350190/1412116247532929206/5.png?ex=68b7c7fd&is=68b6767d&hm=53d2f6ef25b14608ffcaa89cb0ff1877365bf76b162e0812198bb4af6caebffd&",
+                },
+                { 
+                    id: 6, 
+                    name: "Facções", 
+                    description: "Traga Sua Facção e seus amigos para o nosso servidor.", 
+                    price: "3 amigos ou R$ 30/mês",
+                    imageUrl: "https://cdn.discordapp.com/attachments/1401787677128265802/1412116187411644508/6.png?ex=68b7c7ee&is=68b6766e&hm=72148a12d84257180110f51fd584e4cdc2ff1e3dff92e8401b88b4a8a6ba3272&",
+                }
+            ],
+            vehicles: [
+                { 
+                    id: 7, 
+                    name: "AUDI R8 (privado fac)", 
+                    description: "Está pronto para dominar as ruas com classe e agressividade? Chegou sua chance de ter um Audi R8 V10 – um dos superesportivos mais desejados do mundo!.", 
+                    price: "R$ 35,00",
+                    imageUrl: "https://cdn.discordapp.com/attachments/1411759154141593753/1412141514192322692/8.png?ex=68b7df85&is=68b68e05&hm=0984eafdc71dd72b6aa01154c90bb7a3f63ee4972dc2098f9575ae0645f15922&",
+                    details: [
+                        "✨ Destaques do veículo:🖤 Cor preta fosca que impõe respeito.",
+                        "🚀 Desempenho de tirar o fôlego, perfeito para velocidade.",
+                        "🎶 Interior de luxo e muito conforto.",
+                        "💎 Esportivo, exclusivo e estiloso."
+                    ]
+                },
+                { 
+                    id: 8, 
+                    name: "Ford Ranger Raptor (privado fac)", 
+                    description: "Domine as Ruas com a sua Ford Ranger Raptor .", 
+                    price: "R$ 35,00",
+                    imageUrl: "https://cdn.discordapp.com/attachments/1411759154141593753/1412141643662098463/10.png?ex=68b7dfa4&is=68b68e24&hm=41a29546bca5cd1c0aa2b683d581e3c2b3d238f8c6fc93b287315d309f7cca98&",
+                    details: [
+                        "✔️ imponente e preparada para qualquer terreno!.",
+                        "✔️ Design agressivo e moderno.",
+                        "✔️ Potência e robustez para estrada e off-road.",
+                        "✔️ Conforto e tecnologia de ponta.",
+                        "✔️ Ideal para trabalho e lazer."
+                    ]
+                },
+                { 
+                    id: 9, 
+                    name: "Mitsubishi Lancer (privado  fac)", 
+                    description: "💥 Garanta já o seu Lancer e tenha um carro potente e estiloso para aproveitar no servidor!", 
+                    price: "R$ 35,00",
+                    imageUrl: "https://cdn.discordapp.com/attachments/1411759154141593753/1412141790449893547/11.png?ex=68b7dfc7&is=68b68e47&hm=8e6b531a74de31137528030994cad5f169f1da1147b94b17b31a9f6591226619&",
+                    details: [
+                        "🔹 4 portas.",
+                        "🔹 Exclusivo e pronto para uso."
+                    ]
+                },
+                { 
+                    id: 10, 
+                    name: "Alfa Romeo Giulia Quadrifoglio (privado fac)", 
+                    description: "🔥 Chegou sua chance de ter um verdadeiro sedã esportivo de luxo! Com design moderno, acabamento impecável e potência de sobra, esse carro entrega conforto e performance em qualquer situação.", 
+                    price: "R$ 35,00",
+                    imageUrl: "https://cdn.discordapp.com/attachments/1411759154141593753/1412141790449893547/11.png?ex=68b7dfc7&is=68b68e47&hm=8e6b531a74de31137528030994cad5f169f1da1147b94b17b31a9f6591226619&",
+                    details: [
+                        "✅ 4 portas.",
+                        "🔹 perfeito para lazer ou trabalho."
+                    ]
+                },
+                { 
+                    id: 11, 
+                    name: "Helicóptero Esportivo de Luxo", 
+                    description: "🔥 Exclusividade nos céus!Design moderno, pintura vermelha premium e performance incrível para quem busca estilo e velocidade.", 
+                    price: "R$ 35,00",
+                    imageUrl: "https://cdn.discordapp.com/attachments/1411759154141593753/1412142035330400316/7.png?ex=68b7e001&is=68b68e81&hm=dba92b50ac78bd34d5f667492d090e4644da6ee8637d321dbef008a3a9fca689&",
+                    details: [
+                        "✅ Conforto e potência.",
+                        "✅ Visual esportivo e único."
+                    ]
+                },
+                { 
+                    id: 12, 
+                    name: "Volkswagen Nivus R-Line 2022", 
+                    description: "🔥 Sua chance de ter um SUV moderno, completo e exclusivo!Com design esportivo, acabamento impecável e motor turbo, o Nivus R-Line garante estilo, conforto e performance em qualquer lugar.", 
+                    price: "R$ 35,00",
+                    imageUrl: "https://cdn.discordapp.com/attachments/1411759154141593753/1412142794583179285/Stories_Instagram_jogo_de_futebol_grunge_azul_e_preto_1080_x_1080_px.png?ex=68b7e0b6&is=68b68f36&hm=fab7632932263d17646ebe5bd85a6a8b8cbedb29376b6dab44e0b69800159b74&",
+                    details: [
+                        "✅ Motor 1.0 TSI Turbo – econômico e potente.",
+                        "✅ Automático + multimídia VW Play.",
+                        "✅ Interior premium e rodas esportivas"
+                    ]
+                }
+            ]
+        };
+
+        let currentProducts = []; // Para manter os produtos da categoria atual
+
+        function findProductById(id) {
+            for (const category in products) {
+                const found = products[category].find(p => p.id === id);
+                if (found) {
+                    return found;
+                }
+            }
+            return null;
+        }
+
+        function showProducts(category) {
+            const productsContainer = document.getElementById('products-container');
+            const categoryDescription = document.getElementById('category-description');
+            
+            // Atualizar a lista de produtos da categoria atual
+            currentProducts = products[category];
+            
+            productsContainer.innerHTML = '';
+            
+            if (category === 'vip') {
+                categoryDescription.textContent = 'Produtos e serviços exclusivos para clientes VIP';
+            } else if (category === 'corporations') {
+                categoryDescription.textContent = 'Soluções premium para corporações/Facções de elite';
+            } else if (category === 'vehicles') {
+                categoryDescription.textContent = 'Exclusiva de veículos para os mais exigentes';
+            }
+            
+            currentProducts.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card bg-gray-900 rounded-lg overflow-hidden shadow-lg';
+                productCard.setAttribute('onclick', `showProductModal(${product.id})`);
+                
+                productCard.innerHTML = `
+                    <div class="h-48 overflow-hidden">
+                        <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-white mb-2">${product.name}</h3>
+                        <p class="text-gray-400 mb-4">${product.description}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-yellow-400 font-medium">${product.price}</span>
+                        </div>
+                    </div>
+                `;
+                productsContainer.appendChild(productCard);
+            });
+            
+            document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showProductModal(productId) {
+            const product = findProductById(productId);
+            if (!product) return;
+
+            const modal = document.getElementById('productModal');
+            const modalBody = document.getElementById('modal-body');
+
+            let detailsHtml = '';
+            if (product.details && product.details.length > 0) {
+                detailsHtml = `
+                    <h4 class="text-lg font-bold text-yellow-400 mt-4 mb-2">Detalhes:</h4>
+                    <ul class="list-disc list-inside text-gray-300">
+                        ${product.details.map(detail => `<li>${detail}</li>`).join('')}
+                    </ul>
+                `;
+            }
+
+            modalBody.innerHTML = `
+                <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-auto rounded-md mb-4">
+                <h2 class="text-3xl font-bold text-white mb-2">${product.name}</h2>
+                <p class="text-lg text-gray-400 mb-4">${product.description}</p>
+                <p class="text-2xl font-semibold text-yellow-400">${product.price}</p>
+                ${detailsHtml}
+            `;
+            
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('productModal');
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+
+        // Initialize AOS animation library
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Initialize feather icons
+        feather.replace();
+
+        // Mobile menu toggle
+        const mobileMenuButton = document.querySelector('.mobile-menu-button');
+        const mobileMenu = document.querySelector('.md\\:block');
+        
+        mobileMenuButton.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('productModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
